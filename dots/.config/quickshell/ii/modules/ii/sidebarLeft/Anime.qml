@@ -27,7 +27,8 @@ Item {
 
     property bool pullLoading: false
     property int pullLoadingGap: 80
-    property real normalizedPullDistance: Math.max(0, (1 - Math.exp(-booruResponseListView.verticalOvershoot / 50)) * booruResponseListView.dragging)
+    property real normalizedPullDistance: Math.max(0, (1 - Math.exp(-booruResponseListView.verticalOvershoot
+                                                                    / 50)) * booruResponseListView.dragging)
 
     Connections {
         target: Booru
@@ -46,7 +47,7 @@ Item {
         {
             name: "mode",
             description: Translation.tr("Set the current API provider"),
-            execute: (args) => {
+            execute: args => {
                 Booru.setProvider(args[0]);
             }
         },
@@ -96,11 +97,9 @@ Item {
             } else {
                 Booru.addSystemMessage(Translation.tr("Unknown command: ") + command);
             }
-        }
-        else if (inputText.trim() == "+") {
+        } else if (inputText.trim() == "+") {
             root.handleInput(`${root.commandPrefix}next`);
-        }
-        else {
+        } else {
             // Create tag list
             const tagList = inputText.split(/\s+/).filter(tag => tag.length > 0);
             let pageIndex = 1;
@@ -111,35 +110,41 @@ Item {
                     break;
                 }
             }
-            Booru.makeRequest(tagList, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit, pageIndex);
+            Booru.makeRequest(tagList, Persistent.states.booru.allowNsfw, Config.options.sidebar.booru.limit,
+                              pageIndex);
         }
     }
 
-    onFocusChanged: (focus) => {
+    onFocusChanged: focus => {
         if (focus) {
-            tagInputField.forceActiveFocus()
+            tagInputField.forceActiveFocus();
         }
     }
 
     property real pageKeyScrollAmount: booruResponseListView.height / 2
-    Keys.onPressed: (event) => {
-        tagInputField.forceActiveFocus()
+    Keys.onPressed: event => {
+        tagInputField.forceActiveFocus();
         if (event.modifiers === Qt.NoModifier) {
             if (event.key === Qt.Key_PageUp) {
-                if (booruResponseListView.atYBeginning) return;
-                booruResponseListView.contentY = Math.max(0, booruResponseListView.contentY - root.pageKeyScrollAmount)
-                event.accepted = true
+                if (booruResponseListView.atYBeginning)
+                    return;
+                booruResponseListView.contentY = Math.max(0, booruResponseListView.contentY
+                                                          - root.pageKeyScrollAmount);
+                event.accepted = true;
             } else if (event.key === Qt.Key_PageDown) {
-                if (booruResponseListView.atYEnd) return;
-                booruResponseListView.contentY = Math.min(booruResponseListView.contentHeight, booruResponseListView.contentY + root.pageKeyScrollAmount)
-                event.accepted = true
+                if (booruResponseListView.atYEnd)
+                    return;
+                booruResponseListView.contentY = Math.min(booruResponseListView.contentHeight,
+                                                          booruResponseListView.contentY
+                                                          + root.pageKeyScrollAmount);
+                event.accepted = true;
             }
         }
-        if ((event.modifiers & Qt.ControlModifier) && (event.modifiers & Qt.ShiftModifier) && event.key === Qt.Key_O) {
-            Booru.clearResponses()
+        if ((event.modifiers & Qt.ControlModifier) && (event.modifiers & Qt.ShiftModifier) && event.key
+                === Qt.Key_O) {
+            Booru.clearResponses();
         }
     }
-
 
     ColumnLayout {
         id: columnLayout
@@ -173,7 +178,7 @@ Item {
                 z: 0
                 anchors.fill: parent
                 spacing: 10
-                
+
                 touchpadScrollFactor: Config.options.interactions.scrolling.touchpadScrollFactor * 1.4
                 mouseScrollFactor: Config.options.interactions.scrolling.mouseScrollFactor * 1.4
 
@@ -182,9 +187,12 @@ Item {
                     target: root
                     function onResponsesChanged() {
                         if (root.responses.length > booruResponseListView.lastResponseLength) {
-                            if (booruResponseListView.lastResponseLength > 0 && root.responses[booruResponseListView.lastResponseLength].provider != "system")
-                                booruResponseListView.contentY = booruResponseListView.contentY + root.scrollOnNewResponse
-                            booruResponseListView.lastResponseLength = root.responses.length
+                            if (booruResponseListView.lastResponseLength > 0
+                                    && root.responses[booruResponseListView.lastResponseLength].provider
+                                    != "system")
+                                booruResponseListView.contentY = booruResponseListView.contentY
+                                        + root.scrollOnNewResponse;
+                            booruResponseListView.lastResponseLength = root.responses.length;
                         }
                     }
                 }
@@ -201,10 +209,10 @@ Item {
                 }
 
                 onDragEnded: { // Pull to load more
-                    const gap = booruResponseListView.verticalOvershoot
+                    const gap = booruResponseListView.verticalOvershoot;
                     if (gap > root.pullLoadingGap) {
-                        root.pullLoading = true
-                        root.handleInput(`${root.commandPrefix}next`)
+                        root.pullLoading = true;
+                        root.handleInput(`${root.commandPrefix}next`);
                     }
                 }
             }
@@ -230,7 +238,8 @@ Item {
                 anchors {
                     horizontalCenter: parent.horizontalCenter
                     bottom: parent.bottom
-                    bottomMargin: 20 + (root.pullLoading ? 0 : Math.max(0, (root.normalizedPullDistance - 0.5) * 50))
+                    bottomMargin: 20 + (root.pullLoading ? 0 : Math.max(0, (root.normalizedPullDistance - 0.5)
+                                                                        * 50))
                     Behavior on bottomMargin {
                         NumberAnimation {
                             duration: 200
@@ -240,7 +249,8 @@ Item {
                     }
                 }
                 loading: root.pullLoading || Booru.runningRequests > 0
-                pullProgress: Math.min(1, booruResponseListView.verticalOvershoot / root.pullLoadingGap * booruResponseListView.dragging)
+                pullProgress: Math.min(1, booruResponseListView.verticalOvershoot / root.pullLoadingGap
+                                       * booruResponseListView.dragging)
                 scale: root.pullLoading ? 1 : Math.min(1, root.normalizedPullDistance * 2)
             }
         }
@@ -260,12 +270,14 @@ Item {
             Repeater {
                 id: tagSuggestionRepeater
                 model: {
-                    tagSuggestions.selectedIndex = 0
-                    return root.suggestionList.slice(0, 10)
+                    tagSuggestions.selectedIndex = 0;
+                    return root.suggestionList.slice(0, 10);
                 }
                 delegate: ApiCommandButton {
                     id: tagButton
-                    colBackground: tagSuggestions.selectedIndex === index ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colSecondaryContainer
+                    colBackground: tagSuggestions.selectedIndex === index
+                                   ? Appearance.colors.colSecondaryContainerHover :
+                                     Appearance.colors.colSecondaryContainer
                     bounce: false
                     contentItem: RowLayout {
                         anchors.centerIn: parent
@@ -293,28 +305,28 @@ Item {
                         }
                     }
                     onClicked: {
-                        tagSuggestions.acceptTag(modelData.name)
+                        tagSuggestions.acceptTag(modelData);
                     }
                 }
             }
 
             function acceptTag(tag) {
+                tag = typeof tag === "string" ? tag : (tag.slug || tag.name);
                 const words = tagInputField.text.trim().split(/\s+/);
                 if (words.length > 0) {
                     words[words.length - 1] = tag;
                 } else {
                     words.push(tag);
                 }
-                const updatedText = words.join(" ") + " ";
-                tagInputField.text = updatedText;
+                tagInputField.text = words.join(" ") + " ";
                 tagInputField.cursorPosition = tagInputField.text.length;
                 tagInputField.forceActiveFocus();
             }
 
             function acceptSelectedTag() {
-                if (tagSuggestions.selectedIndex >= 0 && tagSuggestions.selectedIndex < tagSuggestionRepeater.count) {
-                    const tag = root.suggestionList[tagSuggestions.selectedIndex].name;
-                    tagSuggestions.acceptTag(tag);
+                if (tagSuggestions.selectedIndex >= 0 && tagSuggestions.selectedIndex
+                        < tagSuggestionRepeater.count) {
+                    tagSuggestions.acceptTag(root.suggestionList[tagSuggestions.selectedIndex]);
                 }
             }
         }
@@ -326,8 +338,10 @@ Item {
             radius: Appearance.rounding.normal - root.padding
             color: Appearance.colors.colLayer2
             implicitWidth: tagInputField.implicitWidth
-            implicitHeight: Math.max(inputFieldRowLayout.implicitHeight + inputFieldRowLayout.anchors.topMargin 
-                + commandButtonsRow.implicitHeight + commandButtonsRow.anchors.bottomMargin + columnSpacing, 45)
+            implicitHeight: Math.max(inputFieldRowLayout.implicitHeight
+                                     + inputFieldRowLayout.anchors.topMargin
+                                     + commandButtonsRow.implicitHeight
+                                     + commandButtonsRow.anchors.bottomMargin + columnSpacing, 45)
             clip: true
 
             Behavior on implicitHeight {
@@ -347,9 +361,11 @@ Item {
                     wrapMode: TextArea.Wrap
                     Layout.fillWidth: true
                     padding: 10
-                    color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
+                    color: activeFocus ? Appearance.m3colors.m3onSurface :
+                                         Appearance.m3colors.m3onSurfaceVariant
                     renderType: Text.NativeRendering
-                    placeholderText: Translation.tr('Enter tags, or "%1" for commands').arg(root.commandPrefix)
+                    placeholderText: Translation.tr('Enter tags, or "%1" for commands').arg(
+                                         root.commandPrefix)
 
                     background: null
 
@@ -357,7 +373,7 @@ Item {
                         interval: root.tagSuggestionDelay
                         repeat: false
                         onTriggered: {
-                            const inputText = tagInputField.text
+                            const inputText = tagInputField.text;
                             const words = inputText.trim().split(/\s+/);
                             if (words.length > 0) {
                                 Booru.triggerTagSearch(words[words.length - 1]);
@@ -366,53 +382,63 @@ Item {
                     }
 
                     onTextChanged: { // Handle tag suggestions
-                        if(tagInputField.text.length === 0) {
-                            root.suggestionQuery = ""
-                            root.suggestionList = []
+                        if (tagInputField.text.length === 0) {
+                            root.suggestionQuery = "";
+                            root.suggestionList = [];
                             searchTimer.stop();
-                            return
+                            return;
                         }
-                        if(tagInputField.text.startsWith(`${root.commandPrefix}mode`)) {
-                            root.suggestionQuery = tagInputField.text.split(" ")[1] ?? ""
-                            const providerResults = Fuzzy.go(root.suggestionQuery, Booru.providerList.map(provider => {
-                                return {
-                                    name: Fuzzy.prepare(provider),
-                                    obj: provider,
-                                }
-                            }), {
-                                all: true,
-                                key: "name"
-                            })
+                        if (tagInputField.text.startsWith(`${root.commandPrefix}mode`)) {
+                            root.suggestionQuery = tagInputField.text.split(" ")[1] ?? "";
+                            const providerResults = Fuzzy.go(root.suggestionQuery, Booru.providerList.map(
+                                                                 provider => {
+                                                                     return {
+                                                                         name: Fuzzy.prepare(provider),
+                                                                         obj: provider
+                                                                     };
+                                                                 }), {
+                                                                 all: true,
+                                                                 key: "name"
+                                                             });
                             root.suggestionList = providerResults.map(provider => {
                                 return {
-                                    name: `${tagInputField.text.trim().split(" ").length == 1 ? (root.commandPrefix + "mode ") : ""}${provider.target}`,
+                                    name: `${tagInputField.text.trim().split(" ").length == 1 ? (root.commandPrefix
+                                                                                                 + "mode ") :
+                                                                                                ""}${provider.target
+                                                                                                }`,
                                     displayName: `${Booru.providers[provider.target].name}`,
-                                    description: `${Booru.providers[provider.target].description}`,
-                                }
-                            })
+                                    description: `${Booru.providers[provider.target].description}`
+                                };
+                            });
                             searchTimer.stop();
-                            return
+                            return;
                         }
-                        if(tagInputField.text.startsWith(root.commandPrefix)) {
-                            root.suggestionQuery = tagInputField.text
-                            root.suggestionList = root.allCommands.filter(cmd => cmd.name.startsWith(tagInputField.text.substring(1))).map(cmd => {
-                                return {
-                                    name: `${root.commandPrefix}${cmd.name}`,
-                                    description: `${cmd.description}`,
-                                }
-                            })
+                        if (tagInputField.text.startsWith(root.commandPrefix)) {
+                            root.suggestionQuery = tagInputField.text;
+                            root.suggestionList = root.allCommands.filter(cmd => cmd.name.startsWith(
+                                                                                     tagInputField.text.substring(
+                                                                                         1))).map(cmd => {
+                                                                                             return {
+                                                                                                 name: `${root.commandPrefix
+                                                                                                       }
+${cmd.name}`,
+                                                                                                 description:
+                                                                                                 `
+${cmd.description}`
+                                                                                             };
+                                                                                         });
                             searchTimer.stop();
-                            return
+                            return;
                         }
                         searchTimer.restart();
                     }
 
                     function accept() {
-                        root.handleInput(text)
-                        text = ""
+                        root.handleInput(text);
+                        text = "";
                     }
 
-                    Keys.onPressed: (event) => {
+                    Keys.onPressed: event => {
                         if (event.key === Qt.Key_Tab) {
                             tagSuggestions.acceptSelectedTag();
                             event.accepted = true;
@@ -420,18 +446,19 @@ Item {
                             tagSuggestions.selectedIndex = Math.max(0, tagSuggestions.selectedIndex - 1);
                             event.accepted = true;
                         } else if (event.key === Qt.Key_Down) {
-                            tagSuggestions.selectedIndex = Math.min(root.suggestionList.length - 1, tagSuggestions.selectedIndex + 1);
+                            tagSuggestions.selectedIndex = Math.min(root.suggestionList.length - 1,
+                                                                    tagSuggestions.selectedIndex + 1);
                             event.accepted = true;
                         } else if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return)) {
                             if (event.modifiers & Qt.ShiftModifier) {
                                 // Insert newline
-                                tagInputField.insert(tagInputField.cursorPosition, "\n")
-                                event.accepted = true
+                                tagInputField.insert(tagInputField.cursorPosition, "\n");
+                                event.accepted = true;
                             } else { // Accept text
-                                const inputText = tagInputField.text
-                                root.handleInput(inputText)
-                                tagInputField.clear()
-                                event.accepted = true
+                                const inputText = tagInputField.text;
+                                root.handleInput(inputText);
+                                tagInputField.clear();
+                                event.accepted = true;
                             }
                         }
                     }
@@ -451,9 +478,9 @@ Item {
                         anchors.fill: parent
                         cursorShape: sendButton.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: {
-                            const inputText = tagInputField.text
-                            root.handleInput(inputText)
-                            tagInputField.clear()
+                            const inputText = tagInputField.text;
+                            root.handleInput(inputText);
+                            tagInputField.clear();
                         }
                     }
 
@@ -461,7 +488,8 @@ Item {
                         anchors.centerIn: parent
                         horizontalAlignment: Text.AlignHCenter
                         iconSize: 22
-                        color: sendButton.enabled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer2Disabled
+                        color: sendButton.enabled ? Appearance.m3colors.m3onPrimary :
+                                                    Appearance.colors.colOnLayer2Disabled
                         text: "arrow_upward"
                     }
                 }
@@ -480,20 +508,19 @@ Item {
                 property var commandsShown: [
                     {
                         name: "mode",
-                        sendDirectly: false,
+                        sendDirectly: false
                     },
                     {
                         name: "clear",
-                        sendDirectly: true,
-                    }, 
+                        sendDirectly: true
+                    },
                 ]
 
                 ApiInputBoxIndicator { // Tool indicator
                     icon: "api"
                     text: Booru.providers[Booru.currentProvider].name
-                    tooltipText: Translation.tr("Current API endpoint: %1\nSet it with %2mode PROVIDER")
-                        .arg(Booru.providers[Booru.currentProvider].url)
-                        .arg(root.commandPrefix)
+                    tooltipText: Translation.tr("Current API endpoint: %1\nSet it with %2mode PROVIDER").arg(
+                                     Booru.providers[Booru.currentProvider].url).arg(root.commandPrefix)
                 }
 
                 StyledText {
@@ -510,7 +537,7 @@ Item {
                     hoverEnabled: true
                     PointingHandInteraction {}
                     onPressed: {
-                        nsfwSwitch.checked = !nsfwSwitch.checked
+                        nsfwSwitch.checked = !nsfwSwitch.checked;
                     }
 
                     RowLayout {
@@ -523,7 +550,8 @@ Item {
                             Layout.leftMargin: 10
                             Layout.alignment: Qt.AlignVCenter
                             font.pixelSize: Appearance.font.pixelSize.smaller
-                            color: nsfwSwitch.enabled ? Appearance.colors.colOnLayer1 : Appearance.m3colors.m3outline
+                            color: nsfwSwitch.enabled ? Appearance.colors.colOnLayer1 :
+                                                        Appearance.m3colors.m3outline
                             text: Translation.tr("Allow NSFW")
                         }
                         StyledSwitch {
@@ -531,17 +559,20 @@ Item {
                             enabled: Booru.currentProvider !== "zerochan"
                             scale: 0.6
                             Layout.alignment: Qt.AlignVCenter
-                            checked: (Persistent.states.booru.allowNsfw && Booru.currentProvider !== "zerochan")
+                            checked: (Persistent.states.booru.allowNsfw && Booru.currentProvider
+                                      !== "zerochan")
                             onCheckedChanged: {
-                                if (!nsfwSwitch.enabled) return;
+                                if (!nsfwSwitch.enabled)
+                                    return;
                                 Persistent.states.booru.allowNsfw = checked;
                             }
                         }
                     }
-
                 }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 ButtonGroup {
                     padding: 0
@@ -555,21 +586,20 @@ Item {
 
                             downAction: () => {
                                 if (modelData.sendDirectly) {
-                                    root.handleInput(commandRepresentation)
+                                    root.handleInput(commandRepresentation);
                                 } else {
-                                    tagInputField.text = commandRepresentation + " "
-                                    tagInputField.cursorPosition = tagInputField.text.length
-                                    tagInputField.forceActiveFocus()
+                                    tagInputField.text = commandRepresentation + " ";
+                                    tagInputField.cursorPosition = tagInputField.text.length;
+                                    tagInputField.forceActiveFocus();
                                 }
                                 if (modelData.name === "clear") {
-                                    tagInputField.text = ""
+                                    tagInputField.text = "";
                                 }
                             }
                         }
                     }
                 }
             }
-
         }
     }
 }
