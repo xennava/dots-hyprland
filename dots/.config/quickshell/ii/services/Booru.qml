@@ -200,21 +200,30 @@ Singleton {
                         "width": item.width,
                         "height": item.height,
                         "aspect_ratio": item.width / item.height,
-                        "tags": item.tags.map(tag => {return tag.name}).join(" "),
+                        "tags": item.tags.map(tag => {
+                            return tag.name;
+                        }).join(" "),
                         "rating": item.isNsfw ? "e" : "s",
                         "is_nsfw": item.isNsfw,
                         "md5": item.md5,
-                        "preview_url": item.sample_url ?? item.url, // preview_url just says access denied (maybe i fucked up and sent too many requests idk)
+                        "preview_url": item.sample_url
+                                       ?? item.url // preview_url just says access denied (maybe i fucked up and sent too many requests idk)
+                                       ,
                         "sample_url": item.url,
                         "file_url": item.url,
                         "file_ext": item.extension,
-                        "source": getWorkingImageSource(item.source) ?? item.url,
-                    }
-                })
+                        "source": getWorkingImageSource(item.source) ?? item.url
+                    };
+                });
             },
             "tagSearchTemplate": "https://api.waifu.im/tags?Name={{query}}",
-            "tagMapFunc": (response) => {
-                return response.items.map(item => {return {"name": item.name}})
+            "tagMapFunc": response => {
+                return response.items.map(item => {
+                    return {
+                        name: item.name,
+                        slug: item.slug
+                    };
+                });
             }
         },
         "t.alcy.cc": {
@@ -403,21 +412,21 @@ Singleton {
             }
             root.responseFinished()
         }
-
         try {
             // Required for danbooru and konachan
             if (["danbooru", "konachan"].includes(currentProvider)) {
-                xhr.setRequestHeader("User-Agent", defaultUserAgent)
-            }
-            else if (currentProvider == "zerochan") {
-                const userAgent = Config.options?.sidebar?.booru?.zerochan?.username ? `Desktop sidebar booru viewer - username: ${Config.options.sidebar.booru.zerochan.username}` : defaultUserAgent
-                xhr.setRequestHeader("User-Agent", userAgent)
+                xhr.setRequestHeader("User-Agent", "QuickshellApp/1.0 (Linux; Qt6.11; BooruClient)");
+            } else if (currentProvider == "zerochan") {
+                const userAgent = Config.options?.sidebar?.booru?.zerochan?.username
+                      ? `Desktop sidebar booru viewer - username: 
+${Config.options.sidebar.booru.zerochan.username}` : defaultUserAgent;
+                xhr.setRequestHeader("User-Agent", userAgent);
             }
             root.runningRequests++;
-            xhr.send()
+            xhr.send();
         } catch (error) {
-            console.log("Could not set User-Agent:", error)
-        } 
+            console.log("Could not set User-Agent:", error);
+        }
     }
 
     property var currentTagRequest: null
@@ -426,6 +435,7 @@ Singleton {
             currentTagRequest.abort();
         }
 
+<<<<<<< HEAD
         var provider = providers[currentProvider]
         if (provider.fixedTags) {
             root.tagSuggestion(query, provider.fixedTags)
@@ -459,12 +469,11 @@ Singleton {
         try {
             // Required for danbooru and konachan
             if (["danbooru", "konachan"].includes(currentProvider)) {
-                xhr.setRequestHeader("User-Agent", defaultUserAgent)
+                xhr.setRequestHeader("User-Agent", "QuickshellApp/1.0 (Linux; Qt6.11; BooruClient)");
             }
-            xhr.send()
+            xhr.send();
         } catch (error) {
-            console.log("Could not set User-Agent:", error)
-        } 
+            console.log("Could not set User-Agent:", error);
+        }
     }
 }
-
