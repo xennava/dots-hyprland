@@ -96,11 +96,9 @@ Item {
             } else {
                 Booru.addSystemMessage(Translation.tr("Unknown command: ") + command);
             }
-        }
-        else if (inputText.trim() == "+") {
+        } else if (inputText.trim() == "+") {
             root.handleInput(`${root.commandPrefix}next`);
-        }
-        else {
+        } else {
             // Create tag list
             const tagList = inputText.split(/\s+/).filter(tag => tag.length > 0);
             let pageIndex = 1;
@@ -139,8 +137,6 @@ Item {
             Booru.clearResponses()
         }
     }
-
-
     ColumnLayout {
         id: columnLayout
         anchors {
@@ -173,7 +169,6 @@ Item {
                 z: 0
                 anchors.fill: parent
                 spacing: 10
-                
                 touchpadScrollFactor: Config.options.interactions.scrolling.touchpadScrollFactor * 1.4
                 mouseScrollFactor: Config.options.interactions.scrolling.mouseScrollFactor * 1.4
 
@@ -293,28 +288,28 @@ Item {
                         }
                     }
                     onClicked: {
-                        tagSuggestions.acceptTag(modelData.name)
+                        tagSuggestions.acceptTag(modelData);
                     }
                 }
             }
 
             function acceptTag(tag) {
+                tag = typeof tag === "string" ? tag : (tag.slug || tag.name);
                 const words = tagInputField.text.trim().split(/\s+/);
                 if (words.length > 0) {
                     words[words.length - 1] = tag;
                 } else {
                     words.push(tag);
                 }
-                const updatedText = words.join(" ") + " ";
-                tagInputField.text = updatedText;
+                tagInputField.text = words.join(" ") + " ";
                 tagInputField.cursorPosition = tagInputField.text.length;
                 tagInputField.forceActiveFocus();
             }
 
             function acceptSelectedTag() {
-                if (tagSuggestions.selectedIndex >= 0 && tagSuggestions.selectedIndex < tagSuggestionRepeater.count) {
-                    const tag = root.suggestionList[tagSuggestions.selectedIndex].name;
-                    tagSuggestions.acceptTag(tag);
+                if (tagSuggestions.selectedIndex >= 0 && tagSuggestions.selectedIndex
+                        < tagSuggestionRepeater.count) {
+                    tagSuggestions.acceptTag(root.suggestionList[tagSuggestions.selectedIndex]);
                 }
             }
         }
@@ -538,11 +533,9 @@ Item {
                             }
                         }
                     }
-
                 }
 
                 Item { Layout.fillWidth: true }
-
                 ButtonGroup {
                     padding: 0
                     Repeater { // Command buttons
@@ -569,7 +562,6 @@ Item {
                     }
                 }
             }
-
         }
     }
 }
