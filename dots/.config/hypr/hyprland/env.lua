@@ -1,7 +1,18 @@
 local home_dir = os.getenv("HOME")
+local env_vars = {
+	-- Themes
+	QT_QPA_PLATFORM = "wayland;xcb",
+	QT_QPA_PLATFORMTHEME = "kde",
+	XDG_MENU_PREFIX = "plasma-",
+	-- Virtual environment
+	ILLOGICAL_IMPULSE_VIRTUAL_ENV = home_dir .. "/.local/state/quickshell/.venv",
+	-- Wayland
+	ELECTRON_OZONE_PLATFORM_HINT = "auto",
+}
 
--- Wayland
-hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+for k, v in pairs(env_vars) do
+	hl.env(k, v)
+end
 
 -- Applications
 local function unique_paths_extreme(str)
@@ -16,13 +27,10 @@ local function unique_paths_extreme(str)
 	local len = #str
 
 	while i <= len do
-		-- 1. Cari posisi titik dua (:) berikutnya
 		local next_colon = string.find(str, ":", i, true) -- true = pencarian teks biasa, sangat cepat
 		local e = next_colon and (next_colon - 1) or len
 
-		-- 2. Validasi: pastikan segmen tidak kosong
 		if e >= i then
-			-- 3. Cek karakter pertama tanpa memotong string (menghindari alokasi memori)
 			if string.byte(str, i) ~= 36 then -- 36 adalah kode ASCII untuk karakter '$'
 				local path = string.sub(str, i, e)
 				if not seen[path] then
@@ -44,10 +52,6 @@ local base_xdg = home_dir
 
 local current_xdg = os.getenv("XDG_DATA_DIRS") or ""
 
--- Themes
-hl.env("QT_QPA_PLATFORM", "wayland;xcb")
-hl.env("QT_QPA_PLATFORMTHEME", "kde")
-hl.env("XDG_MENU_PREFIX", "plasma-")
+local combined_xdg = (current_xdg ~= "") and (base_xdg .. ":" .. current_xdg) or base_xdg
 
--- Virtual environment
-hl.env("ILLOGICAL_IMPULSE_VIRTUAL_ENV", home_dir .. "/.local/state/quickshell/.venv")
+hl.env("XDG_DATA_DIRS", unique_paths_extreme(combined_xdg))
