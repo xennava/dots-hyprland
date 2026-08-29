@@ -1,4 +1,5 @@
 HOME = os.getenv("HOME")
+
 local DEFAULT_CONTENT = [[
 -- This file will not be overwritten across dots-hyprland updates.
 -- The file name is for the sake of organization and does not matter
