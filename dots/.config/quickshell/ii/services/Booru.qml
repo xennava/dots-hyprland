@@ -418,8 +418,7 @@ Singleton {
                 xhr.setRequestHeader("User-Agent", "QuickshellApp/1.0 (Linux; Qt6.11; BooruClient)");
             } else if (currentProvider == "zerochan") {
                 const userAgent = Config.options?.sidebar?.booru?.zerochan?.username
-                      ? `Desktop sidebar booru viewer - username: 
-${Config.options.sidebar.booru.zerochan.username}` : defaultUserAgent;
+                      ? `Desktop sidebar booru viewer - username: ${Config.options.sidebar.booru.zerochan.username}` : defaultUserAgent;
                 xhr.setRequestHeader("User-Agent", userAgent);
             }
             root.runningRequests++;
