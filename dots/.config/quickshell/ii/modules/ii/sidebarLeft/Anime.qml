@@ -296,11 +296,11 @@ Item {
             function acceptTag(tag) {
                 tag = typeof tag === "string" ? tag : (tag.slug || tag.name);
                 const words = tagInputField.text.trim().split(/\s+/);
-                if (words.length > 0) {
+                if (words.length > 0)
                     words[words.length - 1] = tag;
-                } else {
+                else
                     words.push(tag);
-                }
+                
                 tagInputField.text = words.join(" ") + " ";
                 tagInputField.cursorPosition = tagInputField.text.length;
                 tagInputField.forceActiveFocus();

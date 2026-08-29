@@ -434,7 +434,6 @@ Singleton {
             currentTagRequest.abort();
         }
 
-<<<<<<< HEAD
         var provider = providers[currentProvider]
         if (provider.fixedTags) {
             root.tagSuggestion(query, provider.fixedTags)
