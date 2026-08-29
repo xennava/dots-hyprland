@@ -1,4 +1,5 @@
 -- put former exec-once commands inside the func and former exec commands outside
+--
 hl.on("hyprland.start", function()
 	local startup_commands = {
 		-- Bar, wallpaper
