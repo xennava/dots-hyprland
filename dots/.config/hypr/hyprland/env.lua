@@ -1,4 +1,5 @@
 local home_dir = os.getenv("HOME")
+
 local env_vars = {
 	-- Themes
 	QT_QPA_PLATFORM = "wayland;xcb",
